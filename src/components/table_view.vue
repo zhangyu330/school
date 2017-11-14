@@ -8,7 +8,7 @@
 				<td>科目比例</td>
 			</tr>
 		</thead>
-		<tr v-for="(x,index) in list_">
+		<tr v-for="(x,index) in list_" :key="index">
 			<td>{{x.subject}}</td>
 			<td>{{x.collegesCount}}</td>
 			<td>{{x.majorCount}}</td>

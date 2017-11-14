@@ -1,5 +1,5 @@
 <template>
-    <div class="filter-box">
+  <div class="filter-box">
 		<div class="seleted-wrap  clearfix">
 			<div class="left-title">已选条件：</div>
 			<div class="right-cont">
@@ -29,7 +29,13 @@
         <tab-view class="tab_list" :title_="tab_title" :list_="tab_right_list"></tab-view>
         <div class="clearfix"></div>
         <!--<college-tab :college_tit="college_title" :college_detail="college_detail" ></college-tab>-->
+  <div class="table">
+        <table-wrap :title="title_tow">
+          <table-row v-for="(x,i) in row_list" :row='x' :key="i"></table-row>
+        </table-wrap>
+  </div>
     </div>
+    
 	</div>
   
 </template>
@@ -37,6 +43,8 @@
 import school_range from '../components/school_range.vue'
 import school_area from '../components/school_area.vue'
 import tab_view from '../components/table_view.vue'
+import table_row from '../components/table_row.vue'
+import table_wrap from '../components/table_wrap.vue'
 export default {
     data:function(){
         return {
@@ -44,25 +52,27 @@ export default {
             // selected_range_item:false
             tab_title:[],
             tab_left_list:[],
-            tab_right_list:[]
+            tab_right_list:[],
+            title_tow: [],
+            row_list:[]
         }
     },
     created:function(){ // 实例化之后，数据绑定之前
     var vm = this
       this.$http.get('src/server/schollRange.json').then(function(res){
-            console.log(res)
+            //console.log(res)
             let range_data =res.data.list.map((value,index)=>{
                 return index==0?{value:value,selected:true}:{value:value,selected:false}
             })
             vm.$store.commit('update_school_range',range_data)
-        })
-        this.$http.get('src/server/schoolArea.json').then(function(res){
-          let area_data =  res.data.list.map((value,index)=>{
-                return index==0?{value:value,selected:true}:{value:value,selected:false}
-            })
-            vm.$store.commit('update_school_area',area_data)
-        })
-         this.$http("./data/general.json").then(function(res){
+      })
+      this.$http.get('src/server/schoolArea.json').then(function(res){
+        let area_data =  res.data.list.map((value,index)=>{
+              return index==0?{value:value,selected:true}:{value:value,selected:false}
+          })
+          vm.$store.commit('update_school_area',area_data)
+      })
+      this.$http.get("./data/general.json").then(function(res){
             vm.tab_title=res.data.result.title;
             var tab_list=res.data.result.analysisData;
             var left_arr=[];
@@ -86,12 +96,19 @@ export default {
             vm.college_title=res.data.result.title;
             vm.college_detail=res.data.result.rows;
           
-          }) 
+      }) 
+      this.$http.get('./data/overall.json').then(function(res){
+          vm.title_tow = res.data.result.title
+          vm.row_list = res.data.result.rows
+          console.log(vm.row_list)
+      })
 		},
     components:{
         'school-range':school_range,
         'school-area':school_area,
         'tab-view':tab_view,
+        'table-row':table_row,
+        'table-wrap':table_wrap
     },
     methods:{
         clearRange:function(){
@@ -199,5 +216,12 @@ export default {
     .clearfix{
       clear: both;
     }
-
+    .table table{
+      width:100%;
+      text-align: center;
+      line-height: 40px;
+    }
+    .table td{
+      line-height: 40px;
+    }
 </style>
